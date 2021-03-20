@@ -1,0 +1,8 @@
+{
+  "name": "Appilepsie",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react",
+  "id": "408e52c6"
+}
