@@ -4,112 +4,98 @@ import style from './style.module.scss';
 import { arrowBack, settings, shareSocial } from "ionicons/icons";
 import { RouteComponentProps, withRouter } from "react-router";
 import Chart from "chart.js";
-import moment from "moment";
-class Main extends React.Component<RouteComponentProps> {
+import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
+
+import { DeviceMotionAccelerationData } from '@ionic-native/device-motion';
+
+import { FallDetector } from "../../fall-detector";
+class Main extends React.Component<RouteComponentProps> {
+    chart: Chart | null = null;
+    fallDetector: FallDetector;
+    position: Geoposition | null = null;
     constructor(props: any) {
         super(props);
+        this.fallDetector = new FallDetector();
+        this.fallDetector.subscribeAcceleration(this.onAcceleration.bind(this));
+        this.fallDetector.subscribeFall(this.onFall.bind(this));
+        Geolocation.getCurrentPosition().then((geo: Geoposition) => {
+            this.position = geo;
+        });
+    }
+    public calcMagnitude = ({ x, y, z }: { x: number, y: number, z: number }) => Math.sqrt(x * x + y * y + z * z);
+
+    onFall() {
+        console.log('fall');
+
+    }
+    onAcceleration(event: DeviceMotionAccelerationData) {
+
+        if (this.chart) {
+            //@ts-ignore
+            if (this.chart.data.datasets[0].data?.length > 30) {
+                //@ts-ignore
+                this.chart.data.labels?.shift();
+                //@ts-ignore
+                this.chart.data.datasets[0].data?.shift();
+
+            }
+            //@ts-ignore
+            this.chart.data.datasets[0].data?.push(this.calcMagnitude(event));
+            this.chart.data.labels?.push((new Date()).getTime());
+            this.chart.update();
+        }
 
     }
 
     componentDidMount() {
         this.initChart();
+        this.fallDetector.start();
     }
     initChart() {
         // @ts-ignore
-        var ctx = document.getElementById('chart').getContext('2d');
-        function newDate(days: number) {
-            return moment().add(days, 'd').toDate();
-        }
-
-        function newDateString(days: number) {
-            return moment().add(days, 'd').format();
-        }
-        function randomScalingFactor() {
-            return Math.round(-100 + Math.random() * 200);
-        };
 
         var color = Chart.helpers.color;
-        var config = {
+        var config: Chart.ChartConfiguration = {
             type: 'line',
+
             data: {
                 datasets: [{
-                    label: 'Dataset with string point data',
-                    backgroundColor: color("red").alpha(0.5).rgbString(),
-                    borderColor: "red",
+                    label: 'Movement acceleration magnitude',
+                    backgroundColor: color("#5BBCB3").alpha(0.5).rgbString(),
+                    borderColor: "#5BBCB3",
                     fill: false,
-                    data: [{
-                        x: newDateString(0),
-                        y: randomScalingFactor()
-                    }, {
-                        x: newDateString(2),
-                        y: randomScalingFactor()
-                    }, {
-                        x: newDateString(4),
-                        y: randomScalingFactor()
-                    }, {
-                        x: newDateString(5),
-                        y: randomScalingFactor()
-                    }],
-                }, {
-                    label: 'Dataset with date object point data',
-                    backgroundColor: color("blue").alpha(0.5).rgbString(),
-                    borderColor: "blue",
-                    fill: false,
-                    data: [{
-                        x: newDate(0),
-                        y: randomScalingFactor()
-                    }, {
-                        x: newDate(2),
-                        y: randomScalingFactor()
-                    }, {
-                        x: newDate(4),
-                        y: randomScalingFactor()
-                    }, {
-                        x: newDate(5),
-                        y: randomScalingFactor()
-                    }]
+                    data: [
+
+                    ],
+
                 }]
             },
             options: {
                 responsive: true,
+                tooltips: {
+                    enabled: false
+                },
                 scales: {
-                    x: {
-                        type: 'time',
+                    xAxes: [{
+                        display: false
+                    }],
+                    yAxes: [{
                         display: true,
-                        title: {
-                            display: true,
-                            text: 'Date'
-                        },
-                        ticks: {
-                            major: {
-                                enabled: true
-                            },
-                            font: function (context:any) {
-                                if (context.tick && context.tick.major) {
-                                    return {
-                                        style: 'bold',
-                                        color: '#FF0000'
-                                    };
-                                }
+                        ticks:
+                        {
+                            min: 0,
+                            max: 50
+                        }
+                    }]
 
-                            }
-                        }
-                    },
-                    y: {
-                        display: false,
-                        title: {
-                            display: false,
-                            text: 'value'
-                        }
-                    }
                 }
             }
         };
         //@ts-ignore
         var ctx = document.getElementById('chart').getContext('2d');
         //@ts-ignore
-		new Chart(ctx, config);
+        this.chart = new Chart(ctx, config);
 
     }
 

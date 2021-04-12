@@ -15,8 +15,7 @@ export default class Index extends React.Component {
                     <img src={logo} />
                 </div>
                 <div className={style['input-wrapper']}>
-                    <IonButton routerLink="/login" expand="block"  >Login</IonButton>
-                    <IonButton routerLink="/signup" expand="block" >Signup</IonButton>
+                    <IonButton routerLink="/main" expand="block"  >Login</IonButton>
                 </div>
             </div>
         </IonPage>
