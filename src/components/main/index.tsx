@@ -1,16 +1,19 @@
 import React from "react";
-import { IonButton, IonApp, IonContent, IonHeader, IonList, IonItem, IonLabel, IonInput, IonTitle, IonIcon, IonPage } from "@ionic/react";
+import { IonButton, IonApp, IonContent, IonHeader, IonList, IonItem, IonLabel, IonInput, IonTitle, IonIcon, IonPage, useIonToast, IonToast } from "@ionic/react";
 import style from './style.module.scss';
 import { arrowBack, settings, shareSocial } from "ionicons/icons";
 import { RouteComponentProps, withRouter } from "react-router";
 import Chart from "chart.js";
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+import axios from 'axios';
+
 
 
 import { DeviceMotionAccelerationData } from '@ionic-native/device-motion';
 
 import { FallDetector } from "../../fall-detector";
-class Main extends React.Component<RouteComponentProps> {
+import { Settings } from "../settings";
+class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
     chart: Chart | null = null;
     fallDetector: FallDetector;
     position: Geoposition | null = null;
@@ -22,11 +25,33 @@ class Main extends React.Component<RouteComponentProps> {
         Geolocation.getCurrentPosition().then((geo: Geoposition) => {
             this.position = geo;
         });
+        this.state = {
+            toast: false
+        }
     }
     public calcMagnitude = ({ x, y, z }: { x: number, y: number, z: number }) => Math.sqrt(x * x + y * y + z * z);
 
+    async sendData() {
+        this.position = await Geolocation.getCurrentPosition();
+        console.log(this.position);
+        let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+
+        var body = {
+            position: { lat: this.position.coords.latitude, lon: this.position.coords.longitude },
+            time: (new Date()).getTime(),
+            user: '17zrami@gmail.com',
+            notify: contacts
+
+        };
+        axios.post('http://localhost:3030/', body);
+
+    }
     onFall() {
         console.log('fall');
+
+        this.setState({ toast: true });
+        this.sendData();
+
 
     }
     onAcceleration(event: DeviceMotionAccelerationData) {
@@ -100,14 +125,22 @@ class Main extends React.Component<RouteComponentProps> {
     }
 
     render() {
+
+
         return <IonPage>
+            <IonToast
+                isOpen={this.state.toast}
+                onDidDismiss={() => this.setState({ toast: false })}
+                message="A fall has been detected"
+                duration={3000}
+            />
             <IonHeader >
-                <IonTitle className={style["title"]}>
+                {/* <IonTitle className={style["title"]}>
                     <a onClick={e => {
                         e.preventDefault();
                         this.props.history.push('/settings');
                     }}><IonIcon icon={settings} size="large" color="primary"></IonIcon> </a>
-                </IonTitle>
+                </IonTitle> */}
             </IonHeader>
             <IonContent>
                 <div className={style["chart-wrapper"]}>
@@ -117,7 +150,8 @@ class Main extends React.Component<RouteComponentProps> {
 
                 </div>
 
-                <IonButton expand="block"  > Share &nbsp; <IonIcon icon={shareSocial} ></IonIcon> </IonButton>
+                {/* <IonButton expand="block"  > Share &nbsp; <IonIcon icon={shareSocial} ></IonIcon> </IonButton> */}
+                <Settings></Settings>
             </IonContent>
         </IonPage >
     }
