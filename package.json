@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@capacitor/android": "^2.4.7",
     "@capacitor/core": "2.4.7",
+    "@ionic-native/android-permissions": "^5.32.0",
     "@ionic-native/core": "^5.32.0",
     "@ionic-native/device-motion": "^5.32.0",
     "@ionic-native/geolocation": "^5.32.0",
@@ -21,6 +23,7 @@
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.21.1",
     "chart.js": "^2.9.4",
+    "cordova-plugin-android-permissions": "^1.1.2",
     "cordova-plugin-device-motion": "^2.0.1",
     "cordova-plugin-geolocation": "^4.1.0",
     "ionicons": "^5.4.0",

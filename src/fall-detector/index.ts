@@ -14,26 +14,31 @@ export class FallDetector {
     sampleSize: number = 1000 / 200; // 10HZ
     samples: number[] = [];
     fallSubject: Subject<FallDetectionData> = new Subject<FallDetectionData>();
-    THRESHOLD = 8;
+    THRESHOLD = 11;
 
-    MIN_THRESHOLD = 5;
+    MIN_THRESHOLD = 2;
     constructor() {
     }
 
     lastFall: any = null;
 
-    start() {
+    start(test = false) {
         this.subscribeAcceleration(this.onAcceleration.bind(this));
-        setInterval(() => {
 
-            var x = Math.sqrt(Math.random() * 100);
-            this.accelerationSubject.next({
-                x: x,
-                y: x,
-                z: x,
-                timestamp: 123
-            });
-        }, 200);
+        if (test) {
+            setInterval(() => {
+
+                var x = Math.sqrt(Math.random() * 100);
+                this.accelerationSubject.next({
+                    x: x,
+                    y: x,
+                    z: x,
+                    timestamp: 123
+                });
+            }, 200);
+
+        }
+
 
         DeviceMotion.watchAcceleration({ frequency: 200 }).subscribe((event: any) => {
             this.accelerationSubject.next(event);

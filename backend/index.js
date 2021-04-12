@@ -78,8 +78,8 @@ app.post('/', (req, res) => {
 
     res.send('OK!');
 })
-/*
+
 app.listen(port, () => {
     console.log(` app listening at http://localhost:${port}`)
-})*/
+})
 

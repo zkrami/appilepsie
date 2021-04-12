@@ -6,6 +6,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 import Chart from "chart.js";
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import axios from 'axios';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 
 
@@ -43,7 +44,9 @@ class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
             notify: contacts
 
         };
-        axios.post('http://localhost:3030/', body);
+        axios.post('http://10.188.220.158:3030/', body).catch((e) => {
+            console.log(e);
+        });
 
     }
     onFall() {
@@ -76,6 +79,8 @@ class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
     componentDidMount() {
         this.initChart();
         this.fallDetector.start();
+        
+        AndroidPermissions.requestPermissions(['ACCESS_NETWORK_STATE' , 'INTERNET']); 
     }
     initChart() {
         // @ts-ignore

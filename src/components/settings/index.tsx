@@ -59,12 +59,12 @@ export class Settings extends React.Component<{}, SettingState> {
                 <IonItem className={style["input-item"]}>
                     <IonLabel position="floating">Name</IonLabel>
                     { /*@ts-ignore */}
-                    <IonInput value={this.state.name} onKeyDown={(event) => this.setState({ name: event.target.value })} ></IonInput>
+                    <IonInput value={this.state.name} onKeyUp={(event) => this.setState({ name: event.target.value })} onChange={(event) => this.setState({ name: event.target.value })} ></IonInput>
                 </IonItem>
                 <IonItem className={style["input-item"]}>
                     <IonLabel position="floating">Email</IonLabel>
                     { /*@ts-ignore */}
-                    <IonInput value={this.state.email} onKeyDown={(event) => this.setState({ email: event.target.value })} ></IonInput>
+                    <IonInput value={this.state.email} onKeyUp={(event) => this.setState({ email: event.target.value })} onChange={(event) => this.setState({ email: event.target.value })} ></IonInput>
                 </IonItem>
                 <IonItem className={style["button-item"]}>
                     <IonButton onClick={() => this.addContact()} expand="block"  >Add</IonButton>
