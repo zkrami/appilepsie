@@ -6,7 +6,7 @@ Pour tester l'application, veuillez installer l'application sur un Android.
 - Vous devez avoir une connexion Internet.
 - Ajoutez des emails pour notifier en cas de chute.
 - Faites tomber le téléphone.
-- Regardez les boîtes des emails que vous avez ajoutés.
+- Regardez les boîtes des emails que vous avez ajoutés (Le message peut dans le boites spam).
 
 ![](chute.jpeg "détéction de chute")
 
