@@ -18,7 +18,7 @@ class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
     chart: Chart | null = null;
     fallDetector: FallDetector;
     position: Geoposition | null = null;
-    host = "http://8.210.117.171:3030/"; 
+    host = "http://8.210.117.171:3030";
     constructor(props: any) {
         super(props);
         this.fallDetector = new FallDetector();
@@ -32,22 +32,35 @@ class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
         }
     }
     public calcMagnitude = ({ x, y, z }: { x: number, y: number, z: number }) => Math.sqrt(x * x + y * y + z * z);
+    sendApi(position:any){
 
-    async sendData() {
-        this.position = await Geolocation.getCurrentPosition();
+        this.position = position;
+          
         console.log(this.position);
         let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
 
         var body = {
-            position: { lat: this.position.coords.latitude, lon: this.position.coords.longitude },
+            position: { lat: this.position?.coords?.latitude, lon: this.position?.coords?.longitude },
             time: (new Date()).getTime(),
             user: '17zrami@gmail.com',
             notify: contacts
 
         };
-        axios.post(this.host, body).catch((e) => {
-            console.log(e);
+        console.log("sending");
+        axios.post(this.host, body).then(() => {
+            console.log("sent");
         });
+        console.log('got position');
+    }
+    sendData() {
+
+       
+        Geolocation.getCurrentPosition({timeout : 500 }).then((position) => {
+            this.sendApi(position);
+        }).catch( () =>{
+            this.sendApi(null);
+        });
+
 
     }
     onFall() {
@@ -80,8 +93,8 @@ class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
     componentDidMount() {
         this.initChart();
         this.fallDetector.start();
-        
-        AndroidPermissions.requestPermissions(['ACCESS_NETWORK_STATE' , 'INTERNET']); 
+
+        AndroidPermissions.requestPermissions(['ACCESS_NETWORK_STATE', 'INTERNET']);
     }
     initChart() {
         // @ts-ignore
@@ -157,6 +170,7 @@ class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
                 </div>
 
                 {/* <IonButton expand="block"  > Share &nbsp; <IonIcon icon={shareSocial} ></IonIcon> </IonButton> */}
+                {/* <IonButton onClick={() => { this.sendData() }}></IonButton> */}
                 <Settings></Settings>
             </IonContent>
         </IonPage >

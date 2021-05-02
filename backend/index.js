@@ -20,7 +20,7 @@ let transporter = nodemailer.createTransport({
     },
 });
 async function sendMail (user, emails, location, time) {
-
+    if(!emails || emails.length == 0 ) return ; 
 
     let message = user + " has fallen in this location " + location + " at " + time;
 
