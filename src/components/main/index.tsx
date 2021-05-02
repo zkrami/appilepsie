@@ -18,6 +18,7 @@ class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
     chart: Chart | null = null;
     fallDetector: FallDetector;
     position: Geoposition | null = null;
+    host = "http://8.210.117.171:3030/"; 
     constructor(props: any) {
         super(props);
         this.fallDetector = new FallDetector();
@@ -44,7 +45,7 @@ class Main extends React.Component<RouteComponentProps, { toast: boolean }> {
             notify: contacts
 
         };
-        axios.post('http://10.188.220.158:3030/', body).catch((e) => {
+        axios.post(this.host, body).catch((e) => {
             console.log(e);
         });
 
